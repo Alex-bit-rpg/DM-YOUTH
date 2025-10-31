@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anonymous Suggestion Box | Suggest</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <div class="logo">💬 Suggestion Box</div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="suggest.html" class="active">Suggest</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="suggest-section">
+      <h2>Share Your Suggestion</h2>
+      <textarea id="suggestionInput" placeholder="Type your anonymous suggestion here..."></textarea>
+      <button id="submitBtn">Submit Suggestion</button>
+
+      <ul id="suggestionList"></ul>
+
+      <button id="clearAllBtn" style="margin-top:15px; background:#dc3545; color:white; border:none; border-radius:6px; padding:10px 15px; cursor:pointer;">
+        Clear All Suggestions
+      </button>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2025 Anonymous Suggestion Box. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
