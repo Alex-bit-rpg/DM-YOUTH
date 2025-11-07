@@ -1,11 +1,11 @@
-/* -----------------------------
-   Mobile Navbar Toggle
+/* ------------------------------
+   Navbar Toggle
 ------------------------------ */
 function toggleMenu() {
   document.getElementById("navLinks").classList.toggle("show");
 }
 
-/* -----------------------------
+/* ------------------------------
    Slideshow Functionality
 ------------------------------ */
 let slideIndex = 0;
@@ -14,8 +14,8 @@ function showSlides() {
   const dots = document.querySelectorAll(".dot");
   if (slides.length === 0) return;
 
-  slides.forEach(slide => (slide.style.display = "none"));
-  dots.forEach(dot => dot.classList.remove("active-dot"));
+  slides.forEach((slide) => (slide.style.display = "none"));
+  dots.forEach((dot) => dot.classList.remove("active-dot"));
 
   slideIndex++;
   if (slideIndex > slides.length) slideIndex = 1;
@@ -27,105 +27,143 @@ function showSlides() {
 }
 showSlides();
 
-/* -----------------------------
-   Anonymous Suggestion Box
+/* ------------------------------
+   Anonymous Suggestion Box (Firebase + Admin Moderation)
 ------------------------------ */
-document.addEventListener("DOMContentLoaded", () => {
-  const suggestionInput = document.getElementById("suggestionInput");
-  const submitBtn = document.getElementById("submitBtn");
-  const suggestionList = document.getElementById("suggestionList");
-  const clearAllBtn = document.getElementById("clearAllBtn");
+import {
+  ref,
+  push,
+  onValue,
+  remove,
+  update,
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
-  // Load existing suggestions from localStorage
-  let suggestions = JSON.parse(localStorage.getItem("suggestions")) || [];
+const db = window.firebaseDB;
 
-  // Save suggestions to localStorage
-  function saveSuggestions() {
-    localStorage.setItem("suggestions", JSON.stringify(suggestions));
+// Change this to your secret admin password 🔐
+const ADMIN_PASSWORD = "MyStrongAdminPass123";
+
+// DOM Elements
+const suggestionInput = document.getElementById("suggestionInput");
+const submitBtn = document.getElementById("submitBtn");
+const suggestionList = document.getElementById("suggestionList");
+const clearAllBtn = document.getElementById("clearAllBtn");
+
+// ----------------------------
+// Submit New Suggestion
+// ----------------------------
+submitBtn?.addEventListener("click", () => {
+  const text = suggestionInput.value.trim();
+  if (text === "") {
+    alert("Please write something before submitting!");
+    return;
   }
 
-  // Display all suggestions
-  function displaySuggestions() {
-    suggestionList.innerHTML = "";
-
-    if (suggestions.length === 0) {
-      suggestionList.innerHTML = "<p style='text-align:center; color:gray;'>No suggestions yet.</p>";
-      return;
-    }
-
-    suggestions.forEach((item, index) => {
-      const li = document.createElement("li");
-      li.classList.add("suggestion-item");
-
-      li.innerHTML = `
-        <p>${item.text}</p>
-        <small>Posted at: ${item.time}</small>
-        <div class="action-buttons">
-          <button class="edit" onclick="editSuggestion(${index})">✏️ Edit</button>
-          <button class="delete" onclick="deleteSuggestion(${index})">🗑️ Delete</button>
-        </div>
-      `;
-
-      suggestionList.appendChild(li);
-    });
-  }
-
-  // Add a new suggestion
-  submitBtn?.addEventListener("click", () => {
-    const text = suggestionInput.value.trim();
-    if (text === "") {
-      alert("Please write something before submitting!");
-      return;
-    }
-
-    const newSuggestion = {
-      text,
-      time: new Date().toLocaleString(),
-    };
-
-    suggestions.push(newSuggestion);
-    saveSuggestions();
-    displaySuggestions();
-    suggestionInput.value = "";
-  });
-
-  // Delete a suggestion
-  window.deleteSuggestion = function (index) {
-    if (confirm("Are you sure you want to delete this suggestion?")) {
-      suggestions.splice(index, 1);
-      saveSuggestions();
-      displaySuggestions();
-    }
+  const newSuggestion = {
+    text,
+    time: new Date().toLocaleString(),
   };
 
-  // Edit a suggestion (within 10 minutes)
-  window.editSuggestion = function (index) {
-    const now = new Date();
-    const suggestionTime = new Date(suggestions[index].time);
-    const diffMinutes = (now - suggestionTime) / 60000;
-
-    if (diffMinutes > 10) {
-      alert("You can only edit within 10 minutes after posting.");
-      return;
-    }
-
-    const newText = prompt("Edit your suggestion:", suggestions[index].text);
-    if (newText !== null && newText.trim() !== "") {
-      suggestions[index].text = newText.trim();
-      saveSuggestions();
-      displaySuggestions();
-    }
-  };
-
-  // Clear all suggestions
-  clearAllBtn?.addEventListener("click", () => {
-    if (confirm("Are you sure you want to clear all suggestions?")) {
-      suggestions = [];
-      saveSuggestions();
-      displaySuggestions();
-    }
-  });
-
-  // Initial display on page load
-  displaySuggestions();
+  push(ref(db, "suggestions"), newSuggestion)
+    .then(() => {
+      suggestionInput.value = "";
+    })
+    .catch((err) => console.error("Error submitting:", err));
 });
+
+// ----------------------------
+// Display Suggestions in Realtime
+// ----------------------------
+onValue(ref(db, "suggestions"), (snapshot) => {
+  suggestionList.innerHTML = "";
+
+  if (!snapshot.exists()) {
+    suggestionList.innerHTML =
+      "<p style='text-align:center; color:gray;'>No suggestions yet.</p>";
+    return;
+  }
+
+  snapshot.forEach((childSnap) => {
+    const suggestion = childSnap.val();
+    const id = childSnap.key;
+
+    const li = document.createElement("li");
+    li.classList.add("suggestion-item");
+
+    li.innerHTML = `
+      <p>${suggestion.text}</p>
+      <small>Posted at: ${suggestion.time}</small>
+      <div class="action-buttons">
+        <button class="edit" onclick="adminEdit('${id}', '${suggestion.text.replace(/'/g, "\\'")}')">✏️ Edit</button>
+        <button class="delete" onclick="adminDelete('${id}')">🗑️ Delete</button>
+      </div>
+    `;
+
+    suggestionList.appendChild(li);
+  });
+});
+
+// ----------------------------
+// Admin Authentication Prompt
+// ----------------------------
+function askAdminPassword() {
+  const entered = prompt("Enter admin password:");
+  return entered === ADMIN_PASSWORD;
+}
+
+// ----------------------------
+// Admin Edit Function
+// ----------------------------
+window.adminEdit = function (id, oldText) {
+  if (!askAdminPassword()) {
+    alert("❌ Wrong password! Only admin can edit.");
+    return;
+  }
+
+  const newText = prompt("Edit suggestion:", oldText);
+  if (!newText || newText.trim() === "") return;
+
+  const updates = {};
+  updates[`suggestions/${id}/text`] = newText.trim();
+  updates[`suggestions/${id}/time`] = new Date().toLocaleString();
+
+  update(ref(db), updates)
+    .then(() => alert("✅ Suggestion updated"))
+    .catch((err) => console.error("Error updating:", err));
+};
+
+// ----------------------------
+// Admin Delete Function
+// ----------------------------
+window.adminDelete = function (id) {
+  if (!askAdminPassword()) {
+    alert("❌ Wrong password! Only admin can delete.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this suggestion?")) return;
+
+  remove(ref(db, "suggestions/" + id))
+    .then(() => alert("🗑️ Deleted successfully"))
+    .catch((err) => console.error("Error deleting:", err));
+};
+
+// ----------------------------
+// Admin Clear All Function
+// ----------------------------
+clearAllBtn?.addEventListener("click", () => {
+  if (!askAdminPassword()) {
+    alert("❌ Wrong password! Only admin can clear all suggestions.");
+    return;
+  }
+
+  if (confirm("⚠️ Delete ALL suggestions? This cannot be undone.")) {
+    remove(ref(db, "suggestions"))
+      .then(() => {
+        suggestionList.innerHTML = "";
+        alert("🧹 All suggestions cleared!");
+      })
+      .catch((err) => console.error("Error clearing all:", err));
+  }
+});
+

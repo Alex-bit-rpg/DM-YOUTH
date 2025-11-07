@@ -40,7 +40,33 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- ✅ Firebase Configuration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuXXrL7ZnJxYXdQpLy3X-l7W99LfXtLZ0",
+      authDomain: "dm-box.firebaseapp.com",
+      projectId: "dm-box",
+      storageBucket: "dm-box.firebasestorage.app",
+      messagingSenderId: "820208090115",
+      appId: "1:820208090115:web:906e340a6d929be295a236",
+      measurementId: "G-39K0HKB1S8",
+      databaseURL: "https://dm-box-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    // 🔥 Make Firebase DB accessible globally
+    window.firebaseApp = app;
+    window.firebaseDB = db;
+  </script>
+
+  <!-- ✅ Your Main JavaScript File -->
+  <script src="script.js" type="module"></script>
 </body>
 </html>
-
