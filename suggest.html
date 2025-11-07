@@ -41,32 +41,32 @@
   </footer>
 
   <!-- ✅ Firebase Configuration -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
-    import { getDatabase } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+  <!-- Firebase App (required) -->
+<script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js"></script>
+<!-- Firebase Analytics -->
+<script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js"></script>
+<!-- Firebase Database -->
+<script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js"></script>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCuXXrL7ZnJxYXdQpLy3X-l7W99LfXtLZ0",
-      authDomain: "dm-box.firebaseapp.com",
-      projectId: "dm-box",
-      storageBucket: "dm-box.firebasestorage.app",
-      messagingSenderId: "820208090115",
-      appId: "1:820208090115:web:906e340a6d929be295a236",
-      measurementId: "G-39K0HKB1S8",
-      databaseURL: "https://dm-box-default-rtdb.firebaseio.com"
-    };
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCuXXrL7ZnJxYXdQpLy3X-l7W99LfXtLZ0",
+    authDomain: "dm-box.firebaseapp.com",
+    projectId: "dm-box",
+    storageBucket: "dm-box.firebasestorage.app",
+    messagingSenderId: "820208090115",
+    appId: "1:820208090115:web:906e340a6d929be295a236",
+    measurementId: "G-39K0HKB1S8",
+    databaseURL: "https://dm-box-default-rtdb.firebaseio.com"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getDatabase(app);
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const analytics = firebase.analytics();
+  const db = firebase.database();
 
-    // 🔥 Make Firebase DB accessible globally
-    window.firebaseApp = app;
-    window.firebaseDB = db;
-  </script>
-
-  <!-- ✅ Your Main JavaScript File -->
-  <script src="script.js" type="module"></script>
+  window.firebaseDB = db; // make DB globally accessible
+</script>
+   <script src="script.js" type="module"></script>
 </body>
 </html>
