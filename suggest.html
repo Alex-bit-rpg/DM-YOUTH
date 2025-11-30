@@ -41,31 +41,29 @@
   </footer>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js"></script>
+ <!-- Firebase v8 (Global Mode — required for script.js) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <script>
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCuXXrL7ZnJxYXdQpLy3X-l7W99LfXtLZ0",
-      authDomain: "dm-box.firebaseapp.com",
-      projectId: "dm-box",
-      storageBucket: "dm-box.firebasestorage.app",
-      messagingSenderId: "820208090115",
-      appId: "1:820208090115:web:906e340a6d929be295a236",
-      measurementId: "G-39K0HKB1S8",
-      databaseURL: "https://dm-box-default-rtdb.firebaseio.com"
-    };
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCuXXrL7ZnJxYXdQpLy3X-l7W99LfXtLZ0",
+    authDomain: "dm-box.firebaseapp.com",
+    projectId: "dm-box",
+    storageBucket: "dm-box.firebasestorage.app",
+    messagingSenderId: "820208090115",
+    appId: "1:820208090115:web:906e340a6d929be295a236",
+    measurementId: "G-39K0HKB1S8",
+    databaseURL: "https://dm-box-default-rtdb.firebaseio.com"
+  };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-    const db = firebase.database();
-    window.firebaseDB = db;
-  </script>
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+  window.firebaseDB = firebase.database();
+</script>
 
-  <!-- Main JS -->
-  <script src="script.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>
